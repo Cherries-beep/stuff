@@ -19,6 +19,7 @@ def busy_work(ms=500):
 
 
 class DummySignModel:
+
     def __init__(self, delay_ms: int = 1000):
         self.delay_ms = delay_ms
         self._lock = asyncio.Lock() # блокировка, чтобы не запускать параллельно
@@ -44,14 +45,14 @@ def process_video(video_file: BytesIO) -> str:
 
     time.sleep(2)
 
-    return "This is a fake transcription of the video."
+    return "Это фейковый перевод с видео. Временно"
 
 def extract_frames(video_file: BytesIO) -> list[np.ndarray]:
     """
-    - Сохраняет BytesIO во временный mp4
-    - Извлекает кадры через OpenCV (cv2.VideoCapture)
-    - Делает каждый кадр resize 320х320
-    - Перевод кадра из BGR -> RGB
+    - Сохраняет BytesIO во временный mp4,
+    - Извлекает кадры через OpenCV (cv2.VideoCapture),
+    - Делает каждый кадр resize 320х320,
+    - Перевод кадра из BGR -> RGB,
     - Возвращает список numpy-массивов для модели
     """
     # сохранение BytesIO во временный файл (OpenCV не умеет читать BytesIO

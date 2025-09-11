@@ -22,18 +22,3 @@ async def save_chunk_to_memory(file, session_id: str, chunk_index: int, is_final
         return sessions[session_id]
 
     return None
-
-
-# def assemble_file(session_id: str) -> BytesIO:
-#     """ Получение файла из BytesIO """
-#
-#     if session_id not in sessions:
-#         raise ValueError("Session not found")
-#
-#     buffer = sessions[session_id]
-#     buffer.seek(0) # переместить курсор в начало буфера чтобы чтение началось с начала файла
-#
-#     return buffer
-
-
-

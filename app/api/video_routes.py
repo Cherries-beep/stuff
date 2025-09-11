@@ -14,9 +14,9 @@ async def upload_video(
     """ Эндпоинт загрузки видео чанками
 
         Args:
-            file: файл
-            sessionId: общий ID всей загрузки
-            chunkIndex: индекс чанка
+            file: файл,
+            sessionId: общий ID всей загрузки,
+            chunkIndex: индекс чанка,
             isFinal: флаг последнего чанка.
     """
 
