@@ -9,7 +9,7 @@ from io import BytesIO
 from tempfile import NamedTemporaryFile
 
 
-def busy_work(ms=500):
+def busy_work(ms=500) -> float:
     """ Имитация загрузки CPU (как будто обрабатываем видео) """
     end = time.perf_counter() + ms / 1000
     x = 0
@@ -19,7 +19,14 @@ def busy_work(ms=500):
 
 
 class DummySignModel:
+
     def __init__(self, delay_ms: int = 1000):
+        """
+        Инициализация модели.
+
+            :param delay_ms: Задержка обработки в миллисекундах.
+            :type delay_ms: int
+        """
         self.delay_ms = delay_ms
         self._lock = asyncio.Lock() # блокировка, чтобы не запускать параллельно
 
@@ -28,6 +35,11 @@ class DummySignModel:
         Имитация асинхронной обработки видео:
         - ждём self.delay_ms (CPU-загрузка в отдельном потоке),
         - возвращаем фейковый текст
+
+        :param video_path: Путь к видеофайлу.
+        :type video_path: str
+        :returns: Фейковый текст распознавания.
+        :rtype: str
         """
         async with self._lock:
             loop = asyncio.get_running_loop()
@@ -37,22 +49,29 @@ class DummySignModel:
 model = DummySignModel(delay_ms=1500)
 
 def process_video(video_file: BytesIO) -> str:
-    """
-    Заглушка ML обработки видео: имитируем задержку (будто модель работает).
-    В реальном коде будет model.predict(frames)
-    """
+    """ Заглушка ML обработки видео: имитируем задержку (будто модель работает)
 
+        :param video_file: Видео в памяти.
+        :type video_file: BytesIO
+        :returns: Фейковый текстовый результат распознавания.
+        :rtype: str
+    """
     time.sleep(2)
 
-    return "This is a fake transcription of the video."
+    return "Это фейковый перевод с видео. Временно"
 
 def extract_frames(video_file: BytesIO) -> list[np.ndarray]:
     """
-    - Сохраняет BytesIO во временный mp4
-    - Извлекает кадры через OpenCV (cv2.VideoCapture)
-    - Делает каждый кадр resize 320х320
-    - Перевод кадра из BGR -> RGB
+    - Сохраняет BytesIO во временный mp4,
+    - Извлекает кадры через OpenCV (cv2.VideoCapture),
+    - Делает каждый кадр resize 320х320,
+    - Перевод кадра из BGR -> RGB,
     - Возвращает список numpy-массивов для модели
+
+    :param video_file: Видео в памяти.
+    :type video_file: BytesIO
+    :returns: Список кадров в формате numpy-массивов (RGB, 320x320).
+    :rtype: list[np.ndarray]
     """
     # сохранение BytesIO во временный файл (OpenCV не умеет читать BytesIO
     with NamedTemporaryFile(delete=False, suffix='.mp4') as tmp:
