@@ -2,7 +2,6 @@
 from io import BytesIO
 from fastapi import UploadFile
 from typing import Optional
-from app.ml.pipeline import model
 
 class SessionManager:
     """
@@ -32,12 +31,7 @@ class SessionManager:
             self.sessions[session_id] = BytesIO()
         return self.sessions[session_id]
 
-    async def save_chunk(
-        self,
-        file: UploadFile,
-        session_id: str,
-        is_final: bool
-    ) -> Optional[BytesIO]:
+    async def save_chunk(self, file: UploadFile, session_id: str, is_final: bool) -> Optional[BytesIO]:
         """
         Сохранение чанка в ОЗУ (BytesIO) :
         - при первом чанке создается новый BytesIO
@@ -60,33 +54,5 @@ class SessionManager:
         if is_final:
             session.seek(0)
             return session
+
         return None
-
-
-session_manager: SessionManager = SessionManager() # глобальный менеджер сессий
-
-async def handle_chunk(file: UploadFile, session_id: str, chunk_index: int,is_final: bool) -> Optional[str]:
-    """
-    Обрабатывает загруженный чанк:
-    - сохраняет в память (BytesIO),
-    - если промежуточный -> возвращает None,
-    - если финальный -> собирает видео и запускает ML-модель.
-
-    :param file: Загружаемый файл чанка.
-    :type file: UploadFile
-    :param session_id: Общий ID всей загрузки.
-    :type session_id: str
-    :param chunk_index: Индекс чанка.
-    :type chunk_index: int
-    :param is_final: Флаг, что это последний чанк.
-    :type is_final: bool
-    :returns: Результат работы модели, если финальный чанк, иначе None.
-    :rtype: Optional[str]
-    """
-    assembled_file: Optional[BytesIO] = await session_manager.save_chunk(file, session_id, is_final)
-
-    if not is_final:
-        return None
-
-    final_text: str = await model.predict(assembled_file) # здесь предполагаем вызов ML-модели
-    return final_text

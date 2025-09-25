@@ -1,5 +1,4 @@
-""" Модуль с мл моделью """
-
+""" Модуль с моделью """
 import cv2
 import numpy as np
 import asyncio
@@ -23,7 +22,6 @@ class DummySignModel:
     def __init__(self, delay_ms: int = 1000):
         """
         Инициализация модели.
-
             :param delay_ms: Задержка обработки в миллисекундах.
             :type delay_ms: int
         """
@@ -89,9 +87,7 @@ def extract_frames(video_file: BytesIO) -> list[np.ndarray]:
         frame = cv2.resize(frame, (320, 320)) # приведение в 320х320
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) # из BGR -> RGB
         frames.append(frame)
-
     cap.release()
 
     return frames
-
 

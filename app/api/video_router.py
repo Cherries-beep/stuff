@@ -1,17 +1,21 @@
-from fastapi import APIRouter, UploadFile, Form, HTTPException, status
-from uuid import UUID
-from app.services.video_service import handle_chunk
+""" Маршруты для работы с видео """
+from fastapi import APIRouter, UploadFile, Form, HTTPException, status, Depends
 from typing import Any
+from uuid import UUID
+from fastapi.responses import JSONResponse
+from app.services.video_service import VideoService
+from app.api.api_di import get_video_service
 
-router = APIRouter()
+video_router = APIRouter()
 
-@router.post('/api/upload-video')
+@video_router.post('/api/upload-video', status_code=status.HTTP_201_CREATED)
 async def upload_video(
         file: UploadFile,
         sessionId: UUID = Form(...),
         chunkIndex: int = Form(...),
-        isFinal: bool = Form(...)
-) -> dict [str, Any]:
+        isFinal: bool = Form(...),
+        service: VideoService = Depends(get_video_service)
+) -> JSONResponse:
     """ Эндпоинт загрузки видео чанками
 
         Args:
@@ -32,13 +36,12 @@ async def upload_video(
         :rtype: dict[str, Any]
         """
     try:
-        result = await handle_chunk(file, str(sessionId), chunkIndex, isFinal)
+        result = await service.handle_chunk(file, str(sessionId), chunkIndex, isFinal)
 
-        if result is None: # промежуточный чанк
-            return {"status": status.HTTP_201_CREATED}
+        if result is None:
+            return JSONResponse(content={'status':'промежуточный чанк'}, status_code=status.HTTP_201_CREATED)
 
-        else: # финальный чанк
-            return {'finalText': result}
+        return JSONResponse(content={"finalText": result}, status_code=status.HTTP_200_OK)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
