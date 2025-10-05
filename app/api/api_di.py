@@ -6,6 +6,7 @@ from app.storage.memory_storage import SessionManager
 
 def get_session_manager() -> SessionManager:
     """Фабрика для SessionManager
+
         :returns: экземпляр SessionManager
         :rtype: SessionManager
     """
@@ -13,6 +14,7 @@ def get_session_manager() -> SessionManager:
 
 def get_video_service() -> VideoService:
     """Фабрика для VideoService с инжектированным SessionManager
+
         :returns: экземпляр VideoService
         :rtype: VideoService
     """

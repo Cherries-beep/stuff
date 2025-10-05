@@ -1,7 +1,6 @@
 """ Модуль для работы с памятью """
 from io import BytesIO
 from fastapi import UploadFile
-from typing import Optional
 
 class SessionManager:
     """
@@ -9,7 +8,7 @@ class SessionManager:
     Используется singleton, чтобы все сессии были глобальными
     """
 
-    _instance: Optional["SessionManager"] = None
+    _instance: "SessionManager" | None = None
     sessions: dict[str, BytesIO]
 
     def __new__(cls) -> "SessionManager":
@@ -31,7 +30,7 @@ class SessionManager:
             self.sessions[session_id] = BytesIO()
         return self.sessions[session_id]
 
-    async def save_chunk(self, file: UploadFile, session_id: str, is_final: bool) -> Optional[BytesIO]:
+    async def save_chunk(self, file: UploadFile, session_id: str, is_final: bool) -> BytesIO | None:
         """
         Сохранение чанка в ОЗУ (BytesIO) :
         - при первом чанке создается новый BytesIO

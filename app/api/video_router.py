@@ -11,18 +11,12 @@ video_router = APIRouter()
 @video_router.post('/api/upload-video', status_code=status.HTTP_201_CREATED)
 async def upload_video(
         file: UploadFile,
-        sessionId: UUID = Form(...),
-        chunkIndex: int = Form(...),
-        isFinal: bool = Form(...),
+        session_d: UUID = Form(..., alias='sessionId'),
+        chunk_index: int = Form(..., alias='chunkIndex'),
+        is_final: bool = Form(..., alias='isFinal'),
         service: VideoService = Depends(get_video_service)
 ) -> JSONResponse:
     """ Эндпоинт загрузки видео чанками
-
-        Args:
-            file: файл,
-            sessionId: общий ID всей загрузки,
-            chunkIndex: индекс чанка,
-            isFinal: флаг последнего чанка.
 
         :param file: Загружаемый файл чанка.
         :type file: UploadFile
@@ -35,13 +29,6 @@ async def upload_video(
         :returns: JSON-ответ с финальным текстом или статусом загрузки.
         :rtype: dict[str, Any]
         """
-    try:
-        result = await service.handle_chunk(file, str(sessionId), chunkIndex, isFinal)
+    final_text = await service.handle_chunk(file, str(sessionId), chunkIndex, isFinal)
 
-        if result is None:
-            return JSONResponse(content={'status':'промежуточный чанк'}, status_code=status.HTTP_201_CREATED)
-
-        return JSONResponse(content={"finalText": result}, status_code=status.HTTP_200_OK)
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return JSONResponse({"finalText": final_text})
